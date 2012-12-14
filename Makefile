@@ -1,4 +1,4 @@
-# (C)2004-2008 Metamod:Source Development Team
+# (C)2004-2010 Metamod:Source Development Team
 # Makefile written by David "BAILOPAN" Anderson
 
 ###########################################
@@ -7,64 +7,83 @@
 
 HL2SDK_L4D = ../../hl2sdk-l4d
 HL2SDK_L4D2 = ../../hl2sdk-l4d2
-MMSOURCE18 = ../
-SRCDS_BASE = ~/srcds
+MMSOURCE19 = ..
 
 #####################################
 ### EDIT BELOW FOR OTHER PROJECTS ###
 #####################################
 
+PROJECT = l4dtoolz_mm
 OBJECTS = l4dtoolz_mm.cpp
-BINARY = l4dtoolz_mm_i486.so
 
 ##############################################
 ### CONFIGURE ANY OTHER FLAGS/OPTIONS HERE ###
 ##############################################
+
+OPT_FLAGS = -O3 -funroll-loops -pipe
+GCC4_FLAGS = -fvisibility=hidden -fvisibility-inlines-hidden
+DEBUG_FLAGS = -g -ggdb3 -D_DEBUG
+CPP = gcc
+CPP_OSX = clang
+
+##########################
+### SDK CONFIGURATIONS ###
+##########################
+
 override ENGSET = false
 
-OPT_FLAGS = -Os -s -pipe
-ifeq "$(ENGINE)" "left4dead"
-GCC4_FLAGS = -fvisibility=hidden -fvisibility-inlines-hidden -DL4D1
-else
-GCC4_FLAGS = -fvisibility=hidden -fvisibility-inlines-hidden -DL4D2
+# Check for valid list of engines
+ifneq (,$(filter original orangebox orangeboxvalve css left4dead left4dead2 csgo,$(ENGINE)))
+	override ENGSET = true
 endif
-DEBUG_FLAGS = -g -ggdb3 -D_DEBUG
-CPP = gcc-4.1
-
 
 ifeq "$(ENGINE)" "left4dead"
 	HL2SDK = $(HL2SDK_L4D)
-	HL2PUB = $(HL2SDK)/public
-	HL2LIB = $(HL2SDK)/lib/linux
-	CFLAGS += -DSOURCE_ENGINE=4
-	METAMOD = $(MMSOURCE18)/core
-	INCLUDE += -I$(HL2SDK)/public/game/server
-	SRCDS = $(SRCDS_BASE)/
-	override ENGSET = true
-else
+	CFLAGS += -DSOURCE_ENGINE=8 -DL4D1
+endif
+ifeq "$(ENGINE)" "left4dead2"
 	HL2SDK = $(HL2SDK_L4D2)
-	HL2PUB = $(HL2SDK)/public
-	HL2LIB = $(HL2SDK)/lib/linux
-	CFLAGS += -DSOURCE_ENGINE=4
-	METAMOD = $(MMSOURCE18)/core
-	INCLUDE += -I$(HL2SDK)/public/game/server
-	SRCDS = $(SRCDS_BASE)/
-	override ENGSET = true
+	CFLAGS += -DSOURCE_ENGINE=9 -DL4D2
 endif
 
-CFLAGS += -DSE_EPISODEONE=1 -SE_DARKMESSIAH=2 -DSE_ORANGEBOX=3 -DSE_LEFT4DEAD=4
+HL2PUB = $(HL2SDK)/public
 
-ifeq "$(ENGINE)" "left4dead"
-LINK += $(HL2LIB)/tier1_i486.a vstdlib_i486.so tier0_i486.so -static-libgcc
+
+INCLUDE += -I$(HL2SDK)/public/game/server
+METAMOD = $(MMSOURCE19)/core
+
+OS := $(shell uname -s)
+
+ifeq "$(OS)" "Darwin"
+	LIB_EXT = dylib
+	HL2LIB = $(HL2SDK)/lib/mac
 else
-LINK += $(HL2LIB)/tier1_i486.a libvstdlib.so libtier0.so -static-libgcc
+	LIB_EXT = so
+	HL2LIB = $(HL2SDK)/lib/linux
 endif
+
+# if ENGINE is original or OB
+ifneq (,$(filter original orangebox,$(ENGINE)))
+	LIB_SUFFIX = _i486.$(LIB_EXT)
+else
+	LIB_PREFIX = lib
+	LIB_SUFFIX = .$(LIB_EXT)
+endif
+
+CFLAGS += -DSE_EPISODEONE=1 -DSE_DARKMESSIAH=2 -DSE_ORANGEBOX=3 -DSE_BLOODYGOODTIME=4 -DSE_EYE=5 \
+	-DSE_CSS=6 -DSE_ORANGEBOXVALVE=7 -DSE_LEFT4DEAD=8 -DSE_LEFT4DEAD2=9 -DSE_ALIENSWARM=10 \
+	-DSE_PORTAL2=11 -DSE_CSGO=12
+
+LINK += $(HL2LIB)/tier1_i486.a $(LIB_PREFIX)vstdlib$(LIB_SUFFIX) $(LIB_PREFIX)tier0$(LIB_SUFFIX)
+
 INCLUDE += -I. -I.. -I$(HL2PUB) -I$(HL2PUB)/engine -I$(HL2PUB)/mathlib -I$(HL2PUB)/vstdlib \
 	-I$(HL2PUB)/tier0 -I$(HL2PUB)/tier1 -I. -I$(METAMOD) -I$(METAMOD)/sourcehook
-	
+
 ################################################
 ### DO NOT EDIT BELOW HERE FOR MOST PROJECTS ###
 ################################################
+
+BINARY = $(PROJECT).$(LIB_EXT)
 
 ifeq "$(DEBUG)" "true"
 	BIN_DIR = Debug.$(ENGINE)
@@ -74,46 +93,68 @@ else
 	CFLAGS += $(OPT_FLAGS)
 endif
 
-GCC_VERSION := $(shell $(CPP) -dumpversion >&1 | cut -b1)
 
-CFLAGS += -D_LINUX -Dstricmp=strcasecmp -D_stricmp=strcasecmp -D_strnicmp=strncasecmp \
+ifeq "$(OS)" "Darwin"
+	CPP = $(CPP_OSX)
+	LIB_EXT = dylib
+	CFLAGS += -DOSX -D_OSX
+	LINK += -dynamiclib -lstdc++ -mmacosx-version-min=10.5
+else
+	LIB_EXT = so
+	CFLAGS += -D_LINUX
+	LINK += -shared
+endif
+
+IS_CLANG := $(shell $(CPP) --version | head -1 | grep clang > /dev/null && echo "1" || echo "0")
+
+ifeq "$(IS_CLANG)" "1"
+	CPP_MAJOR := $(shell $(CPP) --version | grep clang | sed "s/.*version \([0-9]\)*\.[0-9]*.*/\1/")
+	CPP_MINOR := $(shell $(CPP) --version | grep clang | sed "s/.*version [0-9]*\.\([0-9]\)*.*/\1/")
+else
+	CPP_MAJOR := $(shell $(CPP) -dumpversion >&1 | cut -b1)
+	CPP_MINOR := $(shell $(CPP) -dumpversion >&1 | cut -b3)
+endif
+
+CFLAGS += -DPOSIX -Dstricmp=strcasecmp -D_stricmp=strcasecmp -D_strnicmp=strncasecmp \
 	-Dstrnicmp=strncasecmp -D_snprintf=snprintf -D_vsnprintf=vsnprintf -D_alloca=alloca \
-	-Dstrcmpi=strcasecmp -Wall -Wno-non-virtual-dtor -Werror -fPIC -fno-exceptions \
-	-fno-rtti -msse -m32 -fno-strict-aliasing
+	-Dstrcmpi=strcasecmp -DCOMPILER_GCC -Wall -Wno-non-virtual-dtor -Wno-overloaded-virtual \
+	-Werror -fPIC -fno-exceptions -fno-rtti -msse -m32 -fno-strict-aliasing
 
-ifeq "$(GCC_VERSION)" "4"
+# Clang || GCC >= 4
+ifeq "$(shell expr $(IS_CLANG) \| $(CPP_MAJOR) \>= 4)" "1"
 	CFLAGS += $(GCC4_FLAGS)
 endif
 
-OBJ_LINUX := $(OBJECTS:%.cpp=$(BIN_DIR)/%.o)
+# Clang >= 3 || GCC >= 4.7
+ifeq "$(shell expr $(IS_CLANG) \& $(CPP_MAJOR) \>= 3 \| $(CPP_MAJOR) \>= 4 \& $(CPP_MINOR) \>= 7)" "1"
+	CFLAGS += -Wno-delete-non-virtual-dtor
+endif
+
+# OS is Linux and not using clang
+ifeq "$(shell expr $(OS) \= Linux \& $(IS_CLANG) \= 0)" "1"
+	LINK += -static-libgcc
+endif
+
+OBJ_BIN := $(OBJECTS:%.cpp=$(BIN_DIR)/%.o)
 
 $(BIN_DIR)/%.o: %.cpp
 	$(CPP) $(INCLUDE) $(CFLAGS) -o $@ -c $<
 
 all: check
 	mkdir -p $(BIN_DIR)
-ifeq "$(ENGINE)" "left4dead"
-	rm -f vstdlib_i486.so
-	rm -f tier0_i486.so
-	ln -sf $(SRCDS)/bin/vstdlib_i486.so vstdlib_i486.so
-	ln -sf $(SRCDS)/bin/tier0_i486.so tier0_i486.so
-
-else
-	rm -f libvstdlib.so
-	rm -f libtier0.so
-	ln -sf $(SRCDS)/bin/libvstdlib.so libvstdlib.so
-	ln -sf $(SRCDS)/bin/libtier0.so libtier0.so
-endif
-	$(MAKE) -f Makefile l4dtoolz_mm
+	ln -sf $(HL2LIB)/$(LIB_PREFIX)vstdlib$(LIB_SUFFIX)
+	ln -sf $(HL2LIB)/$(LIB_PREFIX)tier0$(LIB_SUFFIX)
+	$(MAKE) -f Makefile stub_mm
 	
 check:
 	if [ "$(ENGSET)" = "false" ]; then \
-		echo "You must supply ENGINE=left4dead or ENGINE=left4dead2"; \
+		echo "You must supply one of the following values for ENGINE:"; \
+		echo "csgo, left4dead2, left4dead, css, orangeboxvalve, orangebox, or original"; \
 		exit 1; \
 	fi
 
-l4dtoolz_mm: check $(OBJ_LINUX)
-	$(CPP) $(INCLUDE) -m32 $(OBJ_LINUX) $(LINK) -shared -ldl -lm -o$(BIN_DIR)/$(BINARY)
+stub_mm: check $(OBJ_BIN)
+	$(CPP) $(INCLUDE) -m32 $(OBJ_BIN) $(LINK) -ldl -lm -o $(BIN_DIR)/$(BINARY)
 
 default: all
 
