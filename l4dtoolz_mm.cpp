@@ -358,11 +358,7 @@ bool l4dtoolz::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool
 #ifdef WIN32
 			tmp_player2 = (char*)FindSignature(players2, base_addr, base_len);
 #else
-#ifdef L4D1
-			tmp_player2 = (char*)FindSignature(players2, base_addr, base_len);
-#else
 			tmp_player2 = tmp_player;
-#endif
 #endif
 			if(tmp_player2 != NULL){
 				get_org_sig(tmp_player, players_new, players_org);
