@@ -149,7 +149,7 @@ all: check
 check:
 	if [ "$(ENGSET)" = "false" ]; then \
 		echo "You must supply one of the following values for ENGINE:"; \
-		echo "csgo, left4dead2, left4dead, css, orangeboxvalve, orangebox, or original"; \
+		echo "left4dead2 or left4dead"; \
 		exit 1; \
 	fi
 
