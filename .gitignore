@@ -38,3 +38,14 @@ ehthumbs.db
 Thumbs.db
 
 .Makefile.swp
+
+*.ncb
+*.suo
+*.user
+*.html
+*.manifest
+*.ilk
+*.obj
+*.pdb
+*.idb
+*.lib
