@@ -49,3 +49,6 @@ Thumbs.db
 *.pdb
 *.idb
 *.lib
+*.exp
+Debug*
+Release*
