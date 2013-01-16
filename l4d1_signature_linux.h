@@ -34,11 +34,11 @@ char* human_limit_org = NULL;
 
 //_ZL10maxplayersRK8CCommand
 //fuction is in engine.so
-const char* players = "\x13\x5B\x5D\xC3\x83\xBB\xC3\xC3\xC3\xC3\x01\x7F\xC3\x8B\x80\xC3\xC3\x00\x00\x89";
-const char* players_new = "\x02\x0A\x90\x90";
+const char* players = "\x13\x83\xBB\xC3\xC3\xC3\xC3\x01\x7F\xC3\x8B\x80\x0C\xC3\xC3\x00\x89\xC3\xC3\xE8";
+const char* players_new = "\x02\x07\x90\x90";
 char* players_org = NULL;
 
-const char* players_new2 = "\x01\x22\xEB";
+const char* players_new2 = "\x03\x1D\x89\xC2\xEB";
 char* players_org2 = NULL;
 
 //CBaseServer::SetReservationCookie(unsigned long long, char  const*, ...)
