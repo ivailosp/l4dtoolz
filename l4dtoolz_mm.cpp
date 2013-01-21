@@ -43,7 +43,7 @@ char* l4dtoolz::tmp_player2 = NULL;
 char* l4dtoolz::unreserved_ptr = NULL;
 char* l4dtoolz::lobby_match_ptr = NULL;
 
-ConVar sv_maxplayers("sv_maxplayers", "-1", 0, "Max Human Players", true, -1, true, 18, l4dtoolz::OnChangeMaxplayers);
+ConVar sv_maxplayers("sv_maxplayers", "-1", 0, "Max Human Players", true, -1, true, 32, l4dtoolz::OnChangeMaxplayers);
 ConVar sv_removehumanlimit("sv_removehumanlimit", "0", 0, "Remove Human limit reached kick", true, 0, true, 1, l4dtoolz::OnChangeRemovehumanlimit);
 ConVar L4DToolZ("L4DToolZ", "",0,"L4DToolZ Author",l4dtoolz::OnChangeIvailosp);
 ConVar sv_force_unreserved("sv_force_unreserved", "0", 0, "Disallow lobby reservation cookie", true, 0, true, 1, l4dtoolz::OnChangeUnreserved);
@@ -235,7 +235,12 @@ void l4dtoolz::OnChangeRemovehumanlimit ( IConVar *var, const char *pOldValue, f
 
 void l4dtoolz::OnChangeIvailosp ( IConVar *var, const char *pOldValue, float flOldValue )
 {
-
+	if(tmp_player == NULL || tmp_player2 == NULL){
+		Msg("L4DToolZ init error\n");
+		return;
+	}
+	WriteSignature(tmp_player, players_org);
+	WriteSignature(tmp_player2, players_org2);
 }
 void l4dtoolz::OnChangeUnreserved ( IConVar *var, const char *pOldValue, float flOldValue )
 {
@@ -347,7 +352,24 @@ bool l4dtoolz::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool
 		get_org_sig(max_players_server_browser, (const char*)server_bplayers_new, server_bplayers_org);
 	}
 #endif
-
+	if(tmp_player == NULL){
+		tmp_player = (char*)FindSignature(players, base_addr, base_len);
+		if(tmp_player != NULL){
+#ifdef WIN32
+			tmp_player2 = (char*)FindSignature(players2, base_addr, base_len);
+#else
+			tmp_player2 = tmp_player;
+#endif
+			if(tmp_player2 != NULL){
+				get_org_sig(tmp_player, players_new, players_org);
+				WriteSignature(tmp_player, players_new);
+				get_org_sig(tmp_player2, players_new2, players_org2);
+				WriteSignature(tmp_player2, players_new2);
+				engine->ServerCommand("maxplayers 32\n");
+				engine->ServerCommand("L4DToolZ ivailosp@abv.bg\n");
+			}
+		}
+	}
 	if(unreserved_ptr==NULL){
 		unreserved_ptr = (char*)FindSignature(unreserved, base_addr, base_len);
 		get_org_sig(unreserved_ptr, unreserved_new, unreserved_org);
