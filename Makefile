@@ -14,7 +14,7 @@ MMSOURCE19 = ..
 #####################################
 
 PROJECT = l4dtoolz_mm
-OBJECTS = l4dtoolz_mm.cpp
+OBJECTS = l4dtoolz_mm.cpp signature.cpp
 
 ##############################################
 ### CONFIGURE ANY OTHER FLAGS/OPTIONS HERE ###

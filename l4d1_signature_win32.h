@@ -1,6 +1,10 @@
+#ifndef _INCLUDE_L4D1_SIGNATURE_WIN32_
+#define _INCLUDE_L4D1_SIGNATURE_WIN32_
+
 const char* server_dll = "server.dll";
 const char* engine_dll = "engine.dll";
 const char* matchmaking_dll = "matchmaking_ds.dll";
+const char* matchmaking_dll_alt = "matchmaking.dll";
 
 const char* friends_lobby = "\x12\x56\x8B\xF1\x8B\x0D\xC3\xC3\xC3\xC3\x85\xC9\x74\xC3\x8B\x01\x8B\x50\x48";
 unsigned char friends_lobby_new[] = {0x06, 0x00, 0xB8, 0x3C, 0x00, 0x00, 0x00, 0xC3};
@@ -37,4 +41,6 @@ char* unreserved_org = NULL;
 const char* lobby_match = "\x06\xB8\x08\x00\x00\x00\xC3";
 unsigned char lobby_match_new[] = {0x01, 0x01, 0xC3};
 char* lobby_match_org = NULL;
+
+#endif //_INCLUDE_L4D1_SIGNATURE_WIN32_
 

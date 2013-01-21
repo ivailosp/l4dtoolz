@@ -3,7 +3,6 @@
 
 #include <ISmmPlugin.h>
 
-
 class l4dtoolz : public ISmmPlugin, public IMetamodListener
 {
 public:
@@ -29,31 +28,19 @@ public:
 	static void OnChangeUnreserved ( IConVar *var, const char *pOldValue, float flOldValue );
 	static void OnChangeIvailosp ( IConVar *var, const char *pOldValue, float flOldValue );
 
-	static char* max_players_friend_lobby;
-	static char* max_players_connect;
-	static char* max_players_server_browser;
-	static char* lobby_sux_ptr;
-	static char* chuman_limit;
-	static char* tmp_player;
-	static char* tmp_player2;
-	static char* unreserved_ptr;
-	static char* lobby_match_ptr;
-
-public:
-	static bool find_base(const char* name, char*& base_addr, size_t& base_len);
-	static void* FindSignature(const char* mask, const char* base_addr, size_t base_len, bool pure_sign = false);
-	static void get_org_sig(const char* offset, const char* new_sig, char*& org_sig);
-	static void WriteSignature(char* addr, const char* signature);
-	static void ReadSignature(const char* addr, char* signature);
+	static void* max_players_friend_lobby;
+	static void* max_players_connect;
+	static void* max_players_server_browser;
+	static void* lobby_sux_ptr;
+	static void* chuman_limit;
+	static void* tmp_player;
+	static void* tmp_player2;
+	static void* unreserved_ptr;
+	static void* lobby_match_ptr;
 private:
 
 #if !defined METAMOD_PLAPI_VERSION
 	SourceHook::CallClass<IVEngineServer> *m_EngineCC;
-#endif
-
-#ifdef WIN32
-private:
-	static HANDLE hProcess;
 #endif
 };
 
