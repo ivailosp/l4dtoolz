@@ -840,6 +840,10 @@
 				RelativePath="..\l4dtoolz_mm.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\signature.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -864,6 +868,10 @@
 			</File>
 			<File
 				RelativePath="..\l4dtoolz_mm.h"
+				>
+			</File>
+			<File
+				RelativePath="..\signature.h"
 				>
 			</File>
 		</Filter>

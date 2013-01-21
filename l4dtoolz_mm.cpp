@@ -31,9 +31,9 @@ void l4dtoolz::OnChangeMaxplayers ( IConVar *var, const char *pOldValue, float f
 		return;
 	}
 	if(new_value != old_value) {
-		if(new_value) {
+		if(new_value >= 0) {
 			max_players_new[4] = friends_lobby_new[3] = server_bplayers_new[3] = new_value;
-			if(lobby_match_ptr != NULL) {
+			if(lobby_match_ptr) {
 				lobby_match_new[2] = new_value;
 				write_signature(lobby_match_ptr, lobby_match_new);
 			} else {
@@ -49,7 +49,7 @@ void l4dtoolz::OnChangeMaxplayers ( IConVar *var, const char *pOldValue, float f
 			write_signature(lobby_sux_ptr, lobby_sux_org);
 			write_signature(max_players_server_browser, server_bplayers_org);
 		
-			if(lobby_match_ptr != NULL)
+			if(lobby_match_ptr)
 				write_signature(lobby_match_ptr, lobby_match_org);
 		}
 	}
@@ -76,11 +76,14 @@ void l4dtoolz::OnChangeRemovehumanlimit ( IConVar *var, const char *pOldValue, f
 void l4dtoolz::OnChangeIvailosp ( IConVar *var, const char *pOldValue, float flOldValue )
 {
 	if(tmp_player == NULL || tmp_player2 == NULL) {
-		Msg("L4DToolZ init error\n");
 		return;
 	}
 	write_signature(tmp_player, players_org);
+	free(players_org);
+	players_org = NULL;
 	write_signature(tmp_player2, players_org2);
+	free(players_org2);
+	players_org2 = NULL;
 }
 
 void l4dtoolz::OnChangeUnreserved ( IConVar *var, const char *pOldValue, float flOldValue )
@@ -147,22 +150,19 @@ bool l4dtoolz::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool
 
 	find_base(matchmaking_dll, &base_addr);
 
-	if(base_addr.addr == NULL)
-		find_base(matchmaking_dll_alt, &base_addr);
-
 	if(!lobby_match_ptr) {
 		lobby_match_ptr = find_signature(lobby_match, &base_addr, 1);
-		get_original_signature(lobby_match, lobby_match_new, &lobby_match_org);
+		get_original_signature(lobby_match_ptr, lobby_match_new, lobby_match_org);
 	}
 
 	find_base(engine_dll, &base_addr);
 	if(!max_players_friend_lobby) {
 		max_players_friend_lobby = find_signature(friends_lobby, &base_addr, 0);
-		get_original_signature(max_players_friend_lobby, friends_lobby_new, &friends_lobby_org);
+		get_original_signature(max_players_friend_lobby, friends_lobby_new, friends_lobby_org);
 	}
 	if(!max_players_connect) {
 		max_players_connect = find_signature(max_players, &base_addr, 0);
-		get_original_signature(max_players_connect, max_players_new, &max_players_org);
+		get_original_signature(max_players_connect, max_players_new, max_players_org);
 	}
 	if(!lobby_sux_ptr) {
 
@@ -171,12 +171,12 @@ bool l4dtoolz::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool
 #else
 		lobby_sux_ptr = find_signature(lobby_sux, &base_addr, 0);
 #endif
-		get_original_signature(lobby_sux_ptr, lobby_sux_new, &lobby_sux_org);
+		get_original_signature(lobby_sux_ptr, lobby_sux_new, lobby_sux_org);
 	}
 #ifdef WIN32
 	if(!max_players_server_browser) {
-		max_players_server_browser = find_signature(server_bplayers, &base_addr 0);
-		get_original_signature(max_players_server_browser, server_bplayers_new, &server_bplayers_org);
+		max_players_server_browser = find_signature(server_bplayers, &base_addr, 0);
+		get_original_signature(max_players_server_browser, server_bplayers_new, server_bplayers_org);
 	}
 #endif
 	if(!tmp_player) {
@@ -188,9 +188,9 @@ bool l4dtoolz::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool
 			tmp_player2 = tmp_player;
 #endif
 			if(tmp_player2) {
-				get_original_signature(tmp_player, players_new, &players_org);
+				get_original_signature(tmp_player, players_new, players_org);
 				write_signature(tmp_player, players_new);
-				get_original_signature(tmp_player2, players_new2, &players_org2);
+				get_original_signature(tmp_player2, players_new2, players_org2);
 				write_signature(tmp_player2, players_new2);
 				engine->ServerCommand("maxplayers 32\n");
 				engine->ServerCommand("L4DToolZ ivailosp@abv.bg\n");
@@ -199,20 +199,20 @@ bool l4dtoolz::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool
 	}
 	if(!unreserved_ptr) {
 		unreserved_ptr = find_signature(unreserved, &base_addr, 0);
-		get_original_signature(unreserved_ptr, unreserved_new, &unreserved_org);
+		get_original_signature(unreserved_ptr, unreserved_new, unreserved_org);
 	}
 
 	find_base(server_dll, &base_addr);
 
 	if(!chuman_limit) {
 		chuman_limit = find_signature(human_limit, &base_addr, 0);
-		get_original_signature(chuman_limit, human_limit_new, &human_limit_org);
+		get_original_signature(chuman_limit, human_limit_new, human_limit_org);
 	}
 
 #ifndef WIN32
 	if(!max_players_server_browser) {
 		max_players_server_browser = find_signature(server_bplayers, &base_addr, 0);
-		get_original_signature(max_players_server_browser, server_bplayers_new, &server_bplayers_org);
+		get_original_signature(max_players_server_browser, server_bplayers_new, server_bplayers_org);
 	}
 #endif
 
@@ -231,8 +231,6 @@ bool l4dtoolz::Unload(char *error, size_t maxlen)
 	write_signature(lobby_sux_ptr, lobby_sux_org);
 	write_signature(max_players_server_browser, server_bplayers_org);
 	write_signature(chuman_limit, human_limit_org);
-	write_signature(tmp_player, players_org);
-	write_signature(tmp_player2, players_org2);
 	write_signature(unreserved_ptr, unreserved_org);
 	write_signature(lobby_match_ptr, lobby_match_org);
 
@@ -241,9 +239,9 @@ bool l4dtoolz::Unload(char *error, size_t maxlen)
 	free(lobby_sux_org);
 	free(server_bplayers_org);
 	free(human_limit_org);
-	free(players_org);
-	free(players_org2);
 	free(unreserved_org);
+	free(lobby_match_org);
+
 	return true;
 }
 

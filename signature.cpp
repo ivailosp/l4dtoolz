@@ -55,7 +55,7 @@ void *find_signature(const char* mask, struct base_addr_t *base_addr, int pure)
 		tmp = pBasePtr;
 		
 		for(i = 1; i <= mask[SIGN_LEN_BYTE]; ++i) {
-			if(pure && mask[i] == '\xC3'){
+			if(!pure && mask[i] == '\xC3'){
 				tmp++;
 				continue;
 			}
@@ -167,7 +167,7 @@ int write_signature(const void* addr, const void* signature)
 
 #ifdef WIN32
 	HANDLE h_process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, GetCurrentProcessId());
-	WriteProcessMemory(hProcess, (void *)(u_addr+sign_off), (void *)(u_addr_sign+SIGN_HEADER_LEN), sign_len, NULL);
+	WriteProcessMemory(h_process, (void *)(u_addr+sign_off), (void *)(u_addr_sign+SIGN_HEADER_LEN), sign_len, NULL);
 	CloseHandle(h_process);
 #else
 
@@ -183,25 +183,27 @@ int read_signature(const void *addr, void *signature)
 {
 	unsigned int u_addr_sign;
 	unsigned int sign_len;
+	unsigned int sign_off;
 	unsigned int u_addr;
 
 	sign_len = ((unsigned char *)signature)[SIGN_LEN_BYTE];
+	sign_off = ((unsigned char *)signature)[SIGN_OFFSET_BYTE];
 	u_addr = (unsigned int)addr;
 	u_addr_sign = (unsigned int)signature;
 
 #ifdef WIN32
 	HANDLE h_process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, GetCurrentProcessId());
-	ReadProcessMemory(h_process, (void *)(u_addr+sign_len), (void *)(u_addr_sign+SIGN_HEADER_LEN), sign_len, NULL);
+	ReadProcessMemory(h_process, (void *)(u_addr+sign_off), (void *)(u_addr_sign+SIGN_HEADER_LEN), sign_len, NULL);
 	CloseHandle(h_process);
 #else
 	lock_region(addr, sign_len, 1);
-	memcpy((void *)(u_addr_sign+SIGN_HEADER_LEN), (void *)(u_addr+sign_len), sign_len);
+	memcpy((void *)(u_addr_sign+SIGN_HEADER_LEN), (void *)(u_addr+sign_off), sign_len);
 	lock_region(addr, sign_len, 0);
 #endif
 	return 0;
 }
 
-int get_original_signature(const void *offset, const void *new_sig, void **org_sig)
+int get_original_signature(const void *offset, const void *new_sig, void *&org_sig)
 {
 	unsigned int sign_len;
 
@@ -209,7 +211,8 @@ int get_original_signature(const void *offset, const void *new_sig, void **org_s
 		return 0;
 
 	sign_len = ((unsigned char *)new_sig)[SIGN_LEN_BYTE];
-	*org_sig = malloc(sign_len + SIGN_HEADER_LEN);
+	org_sig = malloc(sign_len + SIGN_HEADER_LEN);
+	memset(org_sig, 0, sign_len + SIGN_HEADER_LEN);
 	memcpy(org_sig, new_sig, SIGN_HEADER_LEN);
 	return read_signature(offset, org_sig);
 }
