@@ -150,6 +150,9 @@ bool l4dtoolz::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool
 
 	find_base(matchmaking_dll, &base_addr);
 
+	if(base_addr.addr == NULL)
+		find_base(matchmaking_dll_alt, &base_addr);
+
 	if(!lobby_match_ptr) {
 		lobby_match_ptr = find_signature(lobby_match, &base_addr, 1);
 		get_original_signature(lobby_match_ptr, lobby_match_new, lobby_match_org);

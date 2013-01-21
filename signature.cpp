@@ -17,7 +17,7 @@
 #define SIGN_OFFSET_BYTE	1
 
 
-static int lock_region(const void *addr, unsigned int sign_len, int lock)
+static int lock_region(const void *addr, unsigned int sign_len, unsigned int sign_off, int lock)
 {
 #ifndef WIN32
 	unsigned int all_adr;
@@ -28,12 +28,13 @@ static int lock_region(const void *addr, unsigned int sign_len, int lock)
 	p_size = sysconf(_SC_PAGESIZE);
 	u_addr = (unsigned int)addr;
 
-	all_adr = (u_addr + sign_len) & ~(p_size-1);
+	all_adr = (u_addr + sign_off) & ~(p_size-1);
 	all_size = u_addr - all_adr + sign_len;
 
-	if(lock)
+	if(lock) {
 		mlock((void *)all_adr, all_size);
-	else
+		mprotect((void *)all_adr, all_size, PROT_READ|PROT_WRITE|PROT_EXEC);
+	} else
 		munlock((void *)all_adr, all_size);
 #endif
 	return 0;
@@ -48,7 +49,12 @@ void *find_signature(const char* mask, struct base_addr_t *base_addr, int pure)
 	if(base_addr == NULL)
 		return NULL;
 
-	lock_region(pBasePtr, pEndPtr-pBasePtr, 1);
+#ifndef WIN32
+	unsigned int p_size = sysconf(_SC_PAGESIZE);
+	char* all_adr = (char*)((unsigned int)pBasePtr & ~(p_size-1));
+	unsigned int size = pEndPtr - all_adr;
+	mlock(all_adr, size);
+#endif
 
 	while(pBasePtr < pEndPtr)
 	{
@@ -65,14 +71,18 @@ void *find_signature(const char* mask, struct base_addr_t *base_addr, int pure)
 			tmp++;
 		}
 		if(i-1 == mask[0]) {
-			lock_region(pBasePtr, pEndPtr-pBasePtr, 0);
+#ifndef WIN32
+			munlock(all_adr, size);
+#endif
 			return pBasePtr;
 		}
 
 		pBasePtr++;
 	}
 
-	lock_region(pBasePtr, pEndPtr-pBasePtr, 0);
+#ifndef WIN32
+	munlock(all_adr, size);
+#endif
 	return NULL;
 }
 
@@ -171,14 +181,14 @@ int write_signature(const void* addr, const void* signature)
 	CloseHandle(h_process);
 #else
 
-	lock_region(addr, sign_len, 1);
+	lock_region(addr, sign_len, sign_off, 1);
 	memcpy((void *)(u_addr+sign_off), (void *)(u_addr_sign+SIGN_HEADER_LEN), sign_len);
-	lock_region(addr, sign_len, 0);
+	lock_region(addr, sign_len, sign_off, 0);
 
 #endif
 	return 1;
 }
-
+#include <ISmmPlugin.h>
 int read_signature(const void *addr, void *signature)
 {
 	unsigned int u_addr_sign;
@@ -196,9 +206,9 @@ int read_signature(const void *addr, void *signature)
 	ReadProcessMemory(h_process, (void *)(u_addr+sign_off), (void *)(u_addr_sign+SIGN_HEADER_LEN), sign_len, NULL);
 	CloseHandle(h_process);
 #else
-	lock_region(addr, sign_len, 1);
+	lock_region(addr, sign_len, sign_off, 1);
 	memcpy((void *)(u_addr_sign+SIGN_HEADER_LEN), (void *)(u_addr+sign_off), sign_len);
-	lock_region(addr, sign_len, 0);
+	lock_region(addr, sign_len, sign_off, 0);
 #endif
 	return 0;
 }
@@ -212,7 +222,6 @@ int get_original_signature(const void *offset, const void *new_sig, void *&org_s
 
 	sign_len = ((unsigned char *)new_sig)[SIGN_LEN_BYTE];
 	org_sig = malloc(sign_len + SIGN_HEADER_LEN);
-	memset(org_sig, 0, sign_len + SIGN_HEADER_LEN);
 	memcpy(org_sig, new_sig, SIGN_HEADER_LEN);
 	return read_signature(offset, org_sig);
 }
