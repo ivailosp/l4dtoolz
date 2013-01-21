@@ -10,7 +10,7 @@ const char* friends_lobby = "\x18\x55\x89\xE5\x56\x53\x83\xEC\x10\xE8\xC3\xC3\xC
 unsigned char friends_lobby_new[] = {0x06, 0x00, 0xB8, 0x3C, 0x00, 0x00, 0x00, 0xC3};
 void *friends_lobby_org = NULL;
 
-const char* lobby_sux = "\x09\x8B\x96\x7C\x01\x00\x00\x85\xD2\x74";
+const char* lobby_sux = "\x09\x8B\x86\x7C\x01\x00\x00\x85\xC0\x74";
 const char* lobby_sux_new = "\x02\x08\x90\x90";
 void *lobby_sux_org = NULL;
 
