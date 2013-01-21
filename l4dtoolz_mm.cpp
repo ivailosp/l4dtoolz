@@ -270,7 +270,11 @@ const char *l4dtoolz::GetLicense()
 
 const char *l4dtoolz::GetVersion()
 {
-	return "1.0.0.9f";
+#ifdef __GIT_VERSION
+	return __GIT_VERSION;
+#else
+	return "1.0.0.9g-unknown";
+#endif
 }
 
 const char *l4dtoolz::GetDate()

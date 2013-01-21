@@ -1,6 +1,8 @@
 # (C)2004-2010 Metamod:Source Development Team
 # Makefile written by David "BAILOPAN" Anderson
 
+GIT_VERSION = $(shell sh -c 'git describe --abbrev=8 --dirty --always')
+
 ###########################################
 ### EDIT THESE PATHS FOR YOUR OWN SETUP ###
 ###########################################
@@ -44,6 +46,10 @@ endif
 ifeq "$(ENGINE)" "left4dead2"
 	HL2SDK = $(HL2SDK_L4D2)
 	CFLAGS += -DSOURCE_ENGINE=9 -DL4D2
+endif
+
+ifneq "$(GIT_VERSION)" ""
+	CFLAGS += -D__GIT_VERSION=\"$(GIT_VERSION)\"
 endif
 
 HL2PUB = $(HL2SDK)/public
