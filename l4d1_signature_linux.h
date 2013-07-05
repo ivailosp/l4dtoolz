@@ -1,10 +1,9 @@
 #ifndef _INCLUDE_L4D1_SIGNATURE_LINUX_
 #define _INCLUDE_L4D1_SIGNATURE_LINUX_
 
-const char* server_dll = "server.so";
-const char* engine_dll = "engine.so";
-const char* matchmaking_dll = "matchmaking_ds.so";
-const char* matchmaking_dll_alt = "matchmaking.so";
+const char* server_dll[] = {"server.so", 0};
+const char* engine_dll[] = {"engine.so", 0};
+const char* matchmaking_dll[] = {"matchmaking_ds.so", "matchmaking.so", 0};
 
 //CBaseServer::GetMaxHumanPlayers(void)const
 //fuction is in engine.so
@@ -42,6 +41,7 @@ const char* players = "\x13\x83\xBB\xC3\xC3\xC3\xC3\x01\x7F\xC3\x8B\x80\x0C\xC3\
 const char* players_new = "\x02\x07\x90\x90";
 void* players_org = NULL;
 
+const char* players2 = "\x13\x83\xBB\xC3\xC3\xC3\xC3\x01\x7F\xC3\x8B\x80\x0C\xC3\xC3\x00\x89\xC3\xC3\xE8";
 const char* players_new2 = "\x03\x1D\x89\xC2\xEB";
 void* players_org2 = NULL;
 

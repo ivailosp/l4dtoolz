@@ -160,6 +160,22 @@ int find_base(const char* name, struct base_addr_t *base_addr)
 
 }
 
+int find_base_from_list(const char *name[], struct base_addr_t *base_addr)
+{
+	int ret = 0;
+	int i = 0;
+	base_addr->addr = NULL;
+	base_addr->len = 0;
+
+	if (name == NULL)
+		return 0;
+
+	while (name[i] != NULL && !(ret = find_base(name[i], base_addr)))
+		i++;
+
+	return ret;
+}
+
 int write_signature(const void* addr, const void* signature)
 {
 	if(!addr)
@@ -188,7 +204,7 @@ int write_signature(const void* addr, const void* signature)
 #endif
 	return 1;
 }
-#include <ISmmPlugin.h>
+
 int read_signature(const void *addr, void *signature)
 {
 	unsigned int u_addr_sign;

@@ -148,17 +148,14 @@ bool l4dtoolz::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool
 	base_addr.addr = NULL;
 	base_addr.len = 0;
 
-	find_base(matchmaking_dll, &base_addr);
-
-	if(base_addr.addr == NULL)
-		find_base(matchmaking_dll_alt, &base_addr);
+	find_base_from_list(matchmaking_dll, &base_addr);
 
 	if(!lobby_match_ptr) {
 		lobby_match_ptr = find_signature(lobby_match, &base_addr, 1);
 		get_original_signature(lobby_match_ptr, lobby_match_new, lobby_match_org);
 	}
 
-	find_base(engine_dll, &base_addr);
+	find_base_from_list(engine_dll, &base_addr);
 	if(!max_players_friend_lobby) {
 		max_players_friend_lobby = find_signature(friends_lobby, &base_addr, 0);
 		get_original_signature(max_players_friend_lobby, friends_lobby_new, friends_lobby_org);
@@ -185,11 +182,7 @@ bool l4dtoolz::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool
 	if(!tmp_player) {
 		tmp_player = find_signature(players, &base_addr, 0);
 		if(tmp_player) {
-#ifdef WIN32
 			tmp_player2 = find_signature(players2, &base_addr, 0);
-#else
-			tmp_player2 = tmp_player;
-#endif
 			if(tmp_player2) {
 				get_original_signature(tmp_player, players_new, players_org);
 				write_signature(tmp_player, players_new);
@@ -205,7 +198,7 @@ bool l4dtoolz::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool
 		get_original_signature(unreserved_ptr, unreserved_new, unreserved_org);
 	}
 
-	find_base(server_dll, &base_addr);
+	find_base_from_list(server_dll, &base_addr);
 
 	if(!chuman_limit) {
 		chuman_limit = find_signature(human_limit, &base_addr, 0);
@@ -274,7 +267,7 @@ const char *l4dtoolz::GetVersion()
 #ifdef __GIT_VERSION
 	return __GIT_VERSION;
 #else
-	return "1.0.0.9g-unknown";
+	return "1.0.0.9h-unknown";
 #endif
 }
 
