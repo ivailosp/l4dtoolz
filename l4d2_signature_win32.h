@@ -6,7 +6,7 @@ const char* engine_dll = "engine.dll";
 const char* matchmaking_dll = "matchmaking_ds.dll";
 const char* matchmaking_dll_alt = "matchmaking.dll";
 
-const char* friends_lobby = "\x12\x55\x8B\xEC\x56\x8B\xF1\xE8\xC3\xC3\xC3\xC3\x8B\x4D\xC3\x89\x01\x8B\x0D";
+const char* friends_lobby = "\x12\x56\x8B\xF1\x8B\x0D\xC3\xC3\xC3\xC3\x85\xC9\x74\xC3\x8B\x01\x8B\x50\x48";
 unsigned char friends_lobby_new[] = {0x06, 0x00, 0xB8, 0x3C, 0x00, 0x00, 0x00, 0xC3};
 void* friends_lobby_org = NULL;
 
