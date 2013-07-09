@@ -5,10 +5,6 @@ const char* server_dll[] = {"server_srv.so", "server.so", 0};
 const char* engine_dll[] = {"engine_srv.so", "engine.so", 0};
 const char* matchmaking_dll[] = {"matchmaking_ds_srv.so", "matchmaking_srv.so", "matchmaking_ds.so", "matchmaking.so", 0};
 
-const char* friends_lobby = "\x19\x55\x89\xE5\x53\x83\xEC\xC3\xA1\xC3\xC3\xC3\xC3\x8B\x5D\x08\x85\xC0\x74\x1D\x8B\x10\x89\x04\x24\xFF";
-unsigned char friends_lobby_new[] = {0x06, 0x00, 0xB8, 0x3C, 0x00, 0x00, 0x00, 0xC3};
-void *friends_lobby_org = NULL;
-
 const char* lobby_sux = "\x13\xFF\x50\xC3\x84\xC0\x0F\x84\xC3\xC3\xC3\xC3\x8B\xB3\xC3\x01\x00\x00\x85\xF6";
 const char* lobby_sux_new = "\x06\x0B\xBE\x01\x00\x00\x00\x90";
 void *lobby_sux_org = NULL;
@@ -17,13 +13,9 @@ const char* max_players = "\x16\x89\xC6\x8B\x03\x89\x1C\x24\xFF\x50\xC3\x29\xC6\
 char max_players_new[]= {0x06, 0x0F, 0x83, 0xFE, 0x3C, 0x90, 0x90, 0x90};
 void *max_players_org = NULL;
 
-const char* server_bplayers = "\x1A\xA1\xC3\xC3\xC3\xC3\x55\x89\xE5\x85\xC0\x74\xC3\x8B\x10\x89\x45\x08\x5D\x8B\x82\xC3\x02\x00\x00\xFF\xE0";
+const char* server_bplayers = "\x16\x55\x89\xE5\x83\xEC\x08\xE8\xC3\xC3\xC3\xC3\xC9\x3C\x01\x19\xC0\x83\xE0\xFC\x83\xC0\x08";
 unsigned char server_bplayers_new[] = {0x06, 0x00, 0xB8, 0x3C, 0x00, 0x00, 0x00, 0xC3};
 void *server_bplayers_org = NULL;
-
-const char* human_limit = "\x18\x39\x58\x14\x7D\xD7\x8B\x07\x89\x3C\x24\xFF\x90\xC3\xC3\x00\x00\x39\xF0\x7E\xC3\x8B\x45\xC3\x89";
-const char* human_limit_new = "\x02\x12\x90\x90";
-void *human_limit_org = NULL;
 
 const char* players = "\x13\x83\x3D\xC3\xC3\xC3\xC3\x01\x7F\xC3\x8B\x80\xC3\xC3\x00\x00\x89\x04\x24\xE8";
 const char* players_new = "\x02\x07\x90\x90";
