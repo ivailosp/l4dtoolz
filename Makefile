@@ -35,7 +35,7 @@ CPP_OSX = clang
 override ENGSET = false
 
 # Check for valid list of engines
-ifneq (,$(filter original orangebox orangeboxvalve css left4dead left4dead2 csgo,$(ENGINE)))
+ifneq (,$(filter left4dead left4dead2,$(ENGINE)))
 	override ENGSET = true
 endif
 
@@ -68,13 +68,18 @@ else
 	HL2LIB = $(HL2SDK)/lib/linux
 endif
 
-# if ENGINE is original or OB
-ifneq (,$(filter original orangebox,$(ENGINE)))
-	LIB_SUFFIX = _i486.$(LIB_EXT)
+
+LIB_PREFIX = lib
+ifneq (,$(filter left4dead2,$(ENGINE)))
+	ifneq "$(OS)" "Darwin"
+		LIB_SUFFIX = _srv.$(LIB_EXT)
+	else
+		LIB_SUFFIX = .$(LIB_EXT)
+	endif
 else
-	LIB_PREFIX = lib
 	LIB_SUFFIX = .$(LIB_EXT)
 endif
+
 
 CFLAGS += -DSE_EPISODEONE=1 -DSE_DARKMESSIAH=2 -DSE_ORANGEBOX=3 -DSE_BLOODYGOODTIME=4 -DSE_EYE=5 \
 	-DSE_CSS=6 -DSE_ORANGEBOXVALVE=7 -DSE_LEFT4DEAD=8 -DSE_LEFT4DEAD2=9 -DSE_ALIENSWARM=10 \
@@ -150,7 +155,7 @@ all: check
 	mkdir -p $(BIN_DIR)
 	ln -sf $(HL2LIB)/$(LIB_PREFIX)vstdlib$(LIB_SUFFIX)
 	ln -sf $(HL2LIB)/$(LIB_PREFIX)tier0$(LIB_SUFFIX)
-	$(MAKE) -f Makefile stub_mm
+	$(MAKE) -f Makefile l4dtoolz_mm
 	
 check:
 	if [ "$(ENGSET)" = "false" ]; then \
@@ -159,7 +164,7 @@ check:
 		exit 1; \
 	fi
 
-stub_mm: check $(OBJ_BIN)
+l4dtoolz_mm: check $(OBJ_BIN)
 	$(CPP) $(INCLUDE) -m32 $(OBJ_BIN) $(LINK) -ldl -lm -o $(BIN_DIR)/$(BINARY)
 
 default: all
