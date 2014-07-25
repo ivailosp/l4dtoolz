@@ -28,11 +28,11 @@ public:
 	static void OnChangeIvailosp ( IConVar *var, const char *pOldValue, float flOldValue );
 
 #ifdef L4D1
-	static void OnChangeRemovehumanlimit ( IConVar *var, const char *pOldValue, float flOldValue );
 	static void* max_players_friend_lobby;
-	static void* chuman_limit;
 #endif
-
+	static void OnChangeRemovehumanlimit ( IConVar *var, const char *pOldValue, float flOldValue );
+	static void* chuman_limit;
+	
 	static void* max_players_connect;
 	static void* max_players_server_browser;
 	static void* lobby_sux_ptr;
