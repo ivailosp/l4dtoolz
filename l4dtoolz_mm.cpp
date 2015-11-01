@@ -297,7 +297,7 @@ const char *l4dtoolz::GetVersion()
 #ifdef __GIT_VERSION
 	return __GIT_VERSION;
 #else
-	return "1.0.0.9h-unknown";
+	return "1.0.0.9r1";
 #endif
 }
 
