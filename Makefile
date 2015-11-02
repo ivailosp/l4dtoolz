@@ -15,7 +15,7 @@ MMSOURCE19 = ..
 ### EDIT BELOW FOR OTHER PROJECTS ###
 #####################################
 
-PROJECT = l4dtoolz_mm
+PROJECT = l4dtoolz_mm_i486
 OBJECTS = l4dtoolz_mm.cpp signature.cpp
 
 ##############################################
