@@ -46,7 +46,7 @@ void *find_signature(const char* mask, struct base_addr_t *base_addr, int pure)
 	char *pEndPtr = pBasePtr+base_addr->len-(int)mask[SIGN_LEN_BYTE];
 	int i;
 	char* tmp;
-	if(base_addr.addr == NULL)
+	if(base_addr->addr == NULL)
 		return NULL;
 
 #ifndef WIN32
