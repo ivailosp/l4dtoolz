@@ -46,7 +46,7 @@ void *find_signature(const char* mask, struct base_addr_t *base_addr, int pure)
 	char *pEndPtr = pBasePtr+base_addr->len-(int)mask[SIGN_LEN_BYTE];
 	int i;
 	char* tmp;
-	if(base_addr == NULL)
+	if(base_addr->addr == NULL)
 		return NULL;
 
 #ifndef WIN32
@@ -121,9 +121,9 @@ static int callback(struct dl_phdr_info *info, size_t size, void *data)
 int find_base(const char* name, struct base_addr_t *base_addr)
 {
 #ifdef WIN32
-	HANDLE hModuleSnap = INVALID_HANDLE_VALUE;
+/*	HANDLE hModuleSnap = INVALID_HANDLE_VALUE; */
 	MODULEENTRY32 modent;
-	hModuleSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, 0);
+	HANDLE hModuleSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, 0);
 	if(hModuleSnap == INVALID_HANDLE_VALUE) {
 		return 0;
 	}
