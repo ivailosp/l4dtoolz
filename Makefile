@@ -23,7 +23,7 @@ OBJECTS = l4dtoolz_mm.cpp signature.cpp
 ##############################################
 
 OPT_FLAGS = -O3 -funroll-loops -pipe
-GCC4_FLAGS = -fvisibility=hidden -fvisibility-inlines-hidden -std=gnu++0x
+GCC4_FLAGS = -fvisibility=hidden -fvisibility-inlines-hidden
 DEBUG_FLAGS = -g -ggdb3 -D_DEBUG
 CPP = gcc
 CPP_OSX = clang
@@ -138,7 +138,9 @@ endif
 
 # Clang >= 3 || GCC >= 4.7
 ifeq "$(shell expr $(IS_CLANG) \& $(CPP_MAJOR) \>= 3 \| $(CPP_MAJOR) \>= 4 \& $(CPP_MINOR) \>= 7)" "1"
-	CFLAGS += -Wno-delete-non-virtual-dtor
+	CFLAGS += -Wno-delete-non-virtual-dtor -Wno-unused-local-typedefs -std=c++11
+else
+	CFLAGS += -std=gnu++0x
 endif
 
 # OS is Linux and not using clang
