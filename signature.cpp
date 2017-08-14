@@ -121,7 +121,6 @@ static int callback(struct dl_phdr_info *info, size_t size, void *data)
 int find_base(const char* name, struct base_addr_t *base_addr)
 {
 #ifdef WIN32
-/*	HANDLE hModuleSnap = INVALID_HANDLE_VALUE; */
 	MODULEENTRY32 modent;
 	HANDLE hModuleSnap = CreateToolhelp32Snapshot(TH32CS_SNAPALL, 0);
 	if(hModuleSnap == INVALID_HANDLE_VALUE) {
