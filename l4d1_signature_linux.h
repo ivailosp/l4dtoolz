@@ -20,7 +20,7 @@ void* lobby_sux_org = NULL;
 //CBaseServer::ConnectClient(netadr_s &, int, int, int, char  const*, char  const*, char  const*, int, CUtlVector<CLC_SplitPlayerConnect, CUtlMemory<CLC_SplitPlayerConnect, int>> &, bool)
 //fuction is in engine.so
 const char* max_players = "\x0F\xFF\x50\xC3\x29\xC7\x01\xEF\x3B\xC3\xC3\xC3\x00\x00\x0F\x8E";
-char max_players_new[]= {0x06, 0x07, 0x83, 0xFF, 0x3C, 0x90, 0x90, 0x90};
+unsigned char max_players_new[]= {0x06, 0x07, 0x83, 0xFF, 0x3C, 0x90, 0x90, 0x90};
 void* max_players_org = NULL;
 
 //CServerGameClients::GetMaxHumanPlayers(void)

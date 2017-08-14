@@ -10,7 +10,7 @@ const char* lobby_sux_new = "\x06\x0B\xBE\x01\x00\x00\x00\x90";
 void *lobby_sux_org = NULL;
 
 const char* max_players = "\x16\x89\xC6\x8B\x03\x89\x1C\x24\xFF\x50\xC3\x29\xC6\x03\x75\xC3\x3B\xB3\xC3\x01\x00\x00\x0F";
-char max_players_new[]= {0x06, 0x0F, 0x83, 0xFE, 0x3C, 0x90, 0x90, 0x90};
+unsigned char max_players_new[]= {0x06, 0x0F, 0x83, 0xFE, 0x3C, 0x90, 0x90, 0x90};
 void *max_players_org = NULL;
 
 const char* server_bplayers = "\x16\x55\x89\xE5\x83\xEC\x08\xE8\xC3\xC3\xC3\xC3\xC9\x3C\x01\x19\xC0\x83\xE0\xFC\x83\xC0\x08";

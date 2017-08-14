@@ -1,0 +1,91 @@
+# make -f l4d1_make
+
+HX_SDK = ../hl2sdk-l4d
+HX_METAMOD = ../mmsource-1.10
+
+##
+#	Game L4D1
+#	l4dtoolz_mm_i486.so
+##
+
+HX_INCLUDE = -I. \
+	-I$(HX_METAMOD)/core \
+	-I$(HX_METAMOD)/core/sourcehook \
+	-I$(HX_SDK)/public \
+	-I$(HX_SDK)/public/tier0 \
+	-I$(HX_SDK)/public/tier1 \
+	-I$(HX_SDK)/public/engine \
+	-I$(HX_SDK)/public/mathlib \
+	-I$(HX_SDK)/public/appframework
+
+#
+HX_FLAGS = -DSOURCE_ENGINE=8 \
+	-D__GIT_VERSION=\"1.1\" \
+	-DL4D1
+
+#
+HX_FLAGS += -DSE_EPISODEONE=1 \
+	-DSE_DARKMESSIAH=2 \
+	-DSE_ORANGEBOX=3 \
+	-DSE_BLOODYGOODTIME=4 \
+	-DSE_EYE=5 \
+	-DSE_CSS=6 \
+	-DSE_ORANGEBOXVALVE=7 \
+	-DSE_LEFT4DEAD=8 \
+	-DSE_LEFT4DEAD2=9 \
+	-DSE_ALIENSWARM=10 \
+	-DSE_PORTAL2=11 \
+	-DSE_CSGO=12
+
+#
+HX_FLAGS += -DPOSIX \
+	-Dstricmp=strcasecmp \
+	-D_stricmp=strcasecmp \
+	-D_strnicmp=strncasecmp \
+	-Dstrnicmp=strncasecmp \
+	-D_snprintf=snprintf \
+	-D_vsnprintf=vsnprintf \
+	-D_alloca=alloca \
+	-Dstrcmpi=strcasecmp \
+	-DCOMPILER_GCC \
+	-Wno-overloaded-virtual \
+	-Wno-switch \
+	-Wno-unused \
+	-msse \
+	-DSOURCEMOD_BUILD \
+	-DHAVE_STDINT_H \
+	-m32 \
+	-DNDEBUG \
+	-O2 \
+	-funroll-loops \
+	-pipe \
+	-fno-strict-aliasing \
+	-D_LINUX \
+	-mfpmath=sse \
+	-fvisibility=hidden \
+	-Wno-non-virtual-dtor \
+	-fno-exceptions \
+	-fno-rtti \
+	-fvisibility-inlines-hidden
+
+#
+HX_FLAGS += -Wall \
+	-Werror
+
+#
+HX_LIB = l4d1_release/l4dtoolz_mm.o \
+	l4d1_release/signature.o \
+	$(HX_SDK)/lib/linux/tier1_i486.a \
+	libvstdlib.so \
+	libtier0.so
+
+#
+all:
+	mkdir -p l4d1_release
+	ln -sf $(HX_SDK)/lib/linux/libvstdlib.so
+	ln -sf $(HX_SDK)/lib/linux/libtier0.so
+
+	gcc $(HX_INCLUDE) $(HX_FLAGS) -o l4d1_release/l4dtoolz_mm.o -c l4dtoolz_mm.cpp
+	gcc $(HX_INCLUDE) $(HX_FLAGS) -o l4d1_release/signature.o -c signature.cpp
+	gcc $(HX_INCLUDE) $(HX_LIB) -m32 -shared -static-libgcc -ldl -lm -o l4d1_release/l4dtoolz_mm_i486.so
+	rm -rf l4d1_release/*.o
