@@ -86,5 +86,5 @@ all:
 
 	gcc $(HX_INCLUDE) $(HX_FLAGS) -o l4d2_release/l4dtoolz_mm.o -c l4dtoolz_mm.cpp
 	gcc $(HX_INCLUDE) $(HX_FLAGS) -o l4d2_release/signature.o -c signature.cpp
-	gcc $(HX_INCLUDE) $(HX_LIB) -m32 -shared -static-libgcc -ldl -lm -o l4d1_release/l4dtoolz_mm_i486.so
+	gcc $(HX_INCLUDE) $(HX_LIB) -m32 -shared -static-libgcc -ldl -lm -o l4d2_release/l4dtoolz_mm_i486.so
 	rm -rf l4d2_release/*.o
