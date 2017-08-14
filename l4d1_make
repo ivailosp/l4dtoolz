@@ -1,10 +1,10 @@
-# make -f l4d2_make
+# make -f l4d1_make
 
-HX_SDK = ../hl2sdk-l4d2
+HX_SDK = ../hl2sdk-l4d
 HX_METAMOD = ../mmsource-1.10
 
 ##
-#	Game L4D2
+#	Game L4D1
 #	l4dtoolz_mm_i486.so
 ##
 
@@ -19,7 +19,7 @@ HX_INCLUDE = -I. \
 	-I$(HX_SDK)/public/appframework
 
 #
-HX_FLAGS = -DSOURCE_ENGINE=9 \
+HX_FLAGS = -DSOURCE_ENGINE=8 \
 	-D__GIT_VERSION=\"1.1\"
 
 #
@@ -72,19 +72,19 @@ HX_FLAGS += -Wall \
 	-Werror
 
 #
-HX_LIB = l4d2_release/l4dtoolz_mm.o \
-	l4d2_release/signature.o \
+HX_LIB = l4d1_release/l4dtoolz_mm.o \
+	l4d1_release/signature.o \
 	$(HX_SDK)/lib/linux/tier1_i486.a \
-	libvstdlib_srv.so \
-	libtier0_srv.so
+	libvstdlib.so \
+	libtier0.so
 
 #
 all:
-	mkdir -p l4d2_release
-	ln -sf $(HX_SDK)/lib/linux/libvstdlib_srv.so
-	ln -sf $(HX_SDK)/lib/linux/libtier0_srv.so
+	mkdir -p l4d1_release
+	ln -sf $(HX_SDK)/lib/linux/libvstdlib.so
+	ln -sf $(HX_SDK)/lib/linux/libtier0.so
 
-	gcc $(HX_INCLUDE) $(HX_FLAGS) -o l4d2_release/l4dtoolz_mm.o -c l4dtoolz_mm.cpp
-	gcc $(HX_INCLUDE) $(HX_FLAGS) -o l4d2_release/signature.o -c signature.cpp
+	gcc $(HX_INCLUDE) $(HX_FLAGS) -o l4d1_release/l4dtoolz_mm.o -c l4dtoolz_mm.cpp
+	gcc $(HX_INCLUDE) $(HX_FLAGS) -o l4d1_release/signature.o -c signature.cpp
 	gcc $(HX_INCLUDE) $(HX_LIB) -m32 -shared -static-libgcc -ldl -lm -o l4d1_release/l4dtoolz_mm_i486.so
-	rm -rf l4d2_release/*.o
+	rm -rf l4d1_release/*.o
